@@ -1,0 +1,1753 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filmore Premium - Видеоплатформа нового поколения</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@1.4.3/dist/hls.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Roboto', sans-serif;
+        }
+
+        :root {
+            --primary: #6a11cb;
+            --secondary: #2575fc;
+            --dark: #121212;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --premium: #ff6b6b;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: var(--light);
+            line-height: 1.6;
+            padding: 0;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/></svg>');
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Шапка с навигацией */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            margin-bottom: 25px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(10, 8, 36, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+        }
+
+        .logo i {
+            color: var(--premium);
+        }
+
+        nav {
+            display: flex;
+            gap: 25px;
+        }
+
+        nav a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            padding: 8px 15px;
+            border-radius: 30px;
+        }
+
+        nav a:hover, nav a.active {
+            color: white;
+            background: rgba(106, 17, 203, 0.3);
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-login {
+            background: transparent;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-register {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            box-shadow: 0 4px 15px rgba(106, 17, 203, 0.4);
+        }
+
+        .btn-premium {
+            background: linear-gradient(135deg, #ff8e53, var(--premium));
+            color: white;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.6); }
+            70% { box-shadow: 0 0 0 12px rgba(255, 107, 107, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 107, 107, 0); }
+        }
+
+        /* Герой-секция */
+        .hero {
+            text-align: center;
+            padding: 60px 20px;
+            margin: 30px 0;
+            border-radius: 20px;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at top right, rgba(106, 17, 203, 0.1), transparent 70%);
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(90deg, #ff8e53, #fe6b8b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            max-width: 800px;
+            margin: 0 auto 30px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 30px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--premium);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Поиск и категории */
+        .search-container {
+            margin: 40px 0;
+            position: relative;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 16px 25px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            font-size: 1.1rem;
+            outline: none;
+            transition: all 0.3s;
+            padding-left: 60px;
+            background: rgba(0, 0, 0, 0.4);
+            color: white;
+            backdrop-filter: blur(10px);
+        }
+
+        .search-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(106, 17, 203, 0.5);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 25px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+            font-size: 1.3rem;
+        }
+
+        .categories {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 30px;
+            justify-content: center;
+        }
+
+        .category-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.7);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .category-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .category-btn.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 4px 15px rgba(106, 17, 203, 0.4);
+        }
+
+        /* Плеер */
+        .video-player-container {
+            background: #000;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 40px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        #mainVideo {
+            width: 100%;
+            display: block;
+            min-height: 500px;
+            background: #000;
+        }
+
+        .player-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .video-player-container:hover .player-overlay {
+            opacity: 1;
+        }
+
+        .video-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .player-controls {
+            display: flex;
+            gap: 15px;
+        }
+
+        .control-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            font-size: 1.2rem;
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: scale(1.1);
+        }
+
+        .control-btn.fullscreen {
+            background: var(--primary);
+        }
+
+        .control-btn.mute {
+            background: var(--premium);
+        }
+
+        .status {
+            padding: 15px 25px;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
+            min-height: 28px;
+            background: rgba(0, 0, 0, 0.7);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .loader {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 5px solid var(--premium);
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            z-index: 10;
+        }
+
+        /* Секция с видео */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 50px 0 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .view-all {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+
+        .video-card {
+            background: rgba(30, 30, 46, 0.6);
+            border-radius: 15px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            transform: translateY(0);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .video-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+            border-color: rgba(106, 17, 203, 0.5);
+        }
+
+        .video-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            display: block;
+            background: linear-gradient(45deg, #6a11cb, #2575fc);
+        }
+
+        .video-card-content {
+            padding: 15px;
+        }
+
+        .video-card-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: white;
+            font-size: 1.05rem;
+        }
+
+        .video-card-meta {
+            display: flex;
+            justify-content: space-between;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.85rem;
+        }
+
+        .video-category {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .premium-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: var(--premium);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Подписка */
+        .subscription-section {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 60px 0;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .subscription-section::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,107,107,0.1) 0%, transparent 70%);
+            z-index: 0;
+        }
+
+        .subscription-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .subscription-section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .subscription-section p {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 30px;
+        }
+
+        .benefits {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .benefit {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 25px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s;
+        }
+
+        .benefit:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .benefit i {
+            font-size: 2.5rem;
+            color: var(--premium);
+            margin-bottom: 15px;
+        }
+
+        .benefit h3 {
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .benefit p {
+            font-size: 1rem;
+            margin-bottom: 0;
+        }
+
+        .pricing {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 30px;
+            display: inline-block;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .price {
+            font-size: 3rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .price span {
+            font-size: 1.5rem;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 400;
+        }
+
+        /* Отзывы */
+        .testimonials {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin: 50px 0;
+        }
+
+        .testimonial {
+            background: rgba(30, 30, 46, 0.6);
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .testimonial-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .testimonial-author {
+            font-weight: 600;
+            color: white;
+        }
+
+        .testimonial-role {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .testimonial-text {
+            line-height: 1.8;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .rating {
+            color: var(--warning);
+            margin-top: 15px;
+        }
+
+        /* Футер */
+        footer {
+            background: rgba(10, 8, 36, 0.95);
+            padding: 50px 0 30px;
+            margin-top: 80px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-column h3 {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .footer-column h3::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 2px;
+            background: var(--primary);
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.6);
+            text-decoration: none;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .footer-links a:hover {
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .social-link {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .social-link:hover {
+            background: var(--primary);
+            transform: translateY(-5px);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Модальные окна */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .modal-content {
+            background: rgba(30, 30, 46, 0.95);
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            animation: modalAppear 0.4s ease;
+        }
+
+        @keyframes modalAppear {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .close-modal:hover {
+            color: white;
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.4);
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(106, 17, 203, 0.3);
+        }
+
+        .btn-block {
+            width: 100%;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .modal-footer {
+            padding: 20px;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .modal-footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 992px) {
+            .hero h1 {
+                font-size: 2.8rem;
+            }
+            
+            .video-grid {
+                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            nav {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .hero {
+                padding: 40px 15px;
+            }
+            
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+            
+            .stats {
+                flex-wrap: wrap;
+                gap: 20px;
+            }
+            
+            .section-title {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .video-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 15px;
+            }
+            
+            .subscription-section {
+                padding: 30px 15px;
+            }
+            
+            .subscription-section h2 {
+                font-size: 2rem;
+            }
+            
+            .benefits {
+                grid-template-columns: 1fr;
+            }
+            
+            #mainVideo {
+                min-height: 300px;
+            }
+            
+            .modal-content {
+                width: 95%;
+            }
+        }
+
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Шапка -->
+        <header>
+            <a href="#" class="logo">
+                <i class="fas fa-play-circle"></i>
+                <span>Filmore</span>
+            </a>
+            
+            <nav>
+                <a href="#" class="active">Главная</a>
+                <a href="#">Фильмы</a>
+                <a href="#">Сериалы</a>
+                <a href="#">Новинки</a>
+                <a href="#">Мой список</a>
+                <a href="#">Категории</a>
+            </nav>
+            
+            <div class="user-actions">
+                <button class="btn btn-login" id="loginBtn">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Войти
+                </button>
+                <button class="btn btn-register" id="registerBtn">
+                    <i class="fas fa-user-plus"></i>
+                    Регистрация
+                </button>
+                <button class="btn btn-premium" id="premiumBtn">
+                    <i class="fas fa-crown"></i>
+                    PREMIUM
+                </button>
+            </div>
+        </header>
+        
+        <!-- Герой секция -->
+        <section class="hero">
+            <h1>Безграничный мир кино и сериалов</h1>
+            <p>Смотрите новинки кино, популярные сериалы и эксклюзивные материалы в одном месте. Высокое качество без рекламы.</p>
+            
+            <button class="btn btn-premium" style="padding: 15px 40px; font-size: 1.2rem;">
+                <i class="fas fa-play"></i>
+                Смотреть 30 дней бесплатно
+            </button>
+            
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-value">50,000+</div>
+                    <div class="stat-label">Фильмов и сериалов</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">4K</div>
+                    <div class="stat-label">Качество видео</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">99.9%</div>
+                    <div class="stat-label">Довольных зрителей</div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Поиск и категории -->
+        <div class="search-container">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" class="search-input" id="searchInput" placeholder="Поиск фильмов, сериалов, актеров...">
+        </div>
+        
+        <div class="categories" id="categories">
+            <button class="category-btn active" data-category="all">
+                <i class="fas fa-th-large"></i>
+                Все
+            </button>
+            <button class="category-btn" data-category="action">
+                <i class="fas fa-explosion"></i>
+                Боевики
+            </button>
+            <button class="category-btn" data-category="comedy">
+                <i class="fas fa-laugh"></i>
+                Комедии
+            </button>
+            <button class="category-btn" data-category="drama">
+                <i class="fas fa-theater-masks"></i>
+                Драмы
+            </button>
+            <button class="category-btn" data-category="fantasy">
+                <i class="fas fa-dragon"></i>
+                Фэнтези
+            </button>
+            <button class="category-btn" data-category="horror">
+                <i class="fas fa-ghost"></i>
+                Ужасы
+            </button>
+        </div>
+        
+        <!-- Плеер -->
+        <section class="video-player-container" id="videoContainer">
+            <div class="loader" id="loader"></div>
+            <video id="mainVideo" controls playsinline preload="auto">
+                Ваш браузер не поддерживает HTML5 видео.
+            </video>
+            
+            <div class="player-overlay">
+                <div class="video-title" id="currentVideoTitle">Выберите видео для просмотра</div>
+                <div class="player-controls">
+                    <button class="control-btn" id="prevBtn">
+                        <i class="fas fa-step-backward"></i>
+                    </button>
+                    <button class="control-btn" id="playPauseBtn">
+                        <i class="fas fa-play"></i>
+                    </button>
+                    <button class="control-btn" id="nextBtn">
+                        <i class="fas fa-step-forward"></i>
+                    </button>
+                    <button class="control-btn mute" id="muteBtn">
+                        <i class="fas fa-volume-up"></i>
+                    </button>
+                    <button class="control-btn fullscreen" id="fullscreenBtn">
+                        <i class="fas fa-expand"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="status" id="status">
+                <div class="status-text" id="statusText">Выберите видео для воспроизведения</div>
+                <div class="controls">
+                    <div class="view-count">
+                        <i class="fas fa-eye"></i>
+                        <span id="viewCount">0</span> просмотров
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Рекомендуем посмотреть -->
+        <div class="section-header">
+            <h2 class="section-title">
+                <i class="fas fa-fire"></i>
+                Популярные сейчас
+            </h2>
+            <a href="#" class="view-all">
+                Смотреть все
+                <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+        
+        <div class="video-grid" id="featuredVideos">
+            <!-- Видео будут добавляться через JavaScript -->
+        </div>
+        
+        <!-- Новинки -->
+        <div class="section-header">
+            <h2 class="section-title">
+                <i class="fas fa-star"></i>
+                Новые поступления
+            </h2>
+            <a href="#" class="view-all">
+                Смотреть все
+                <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+        
+        <div class="video-grid" id="newVideos">
+            <!-- Видео будут добавляться через JavaScript -->
+        </div>
+        
+        <!-- Подписка -->
+        <section class="subscription-section">
+            <div class="subscription-content">
+                <h2>Получите доступ ко всему контенту</h2>
+                <p>Премиум подписка открывает эксклюзивный контент, максимальное качество и просмотр без рекламы</p>
+                
+                <div class="benefits">
+                    <div class="benefit">
+                        <i class="fas fa-tv"></i>
+                        <h3>Эксклюзивный контент</h3>
+                        <p>Фильмы и сериалы, недоступные на других платформах</p>
+                    </div>
+                    <div class="benefit">
+                        <i class="fas fa-crown"></i>
+                        <h3>Без рекламы</h3>
+                        <p>Наслаждайтесь просмотром без прерываний</p>
+                    </div>
+                    <div class="benefit">
+                        <i class="fas fa-download"></i>
+                        <h3>Скачивание</h3>
+                        <p>Смотрите офлайн в любое время</p>
+                    </div>
+                    <div class="benefit">
+                        <i class="fas fa-4k"></i>
+                        <h3>Максимальное качество</h3>
+                        <p>4K HDR с улучшенным звуком</p>
+                    </div>
+                </div>
+                
+                <div class="pricing">
+                    <div class="price">299<span>₽/месяц</span></div>
+                    <p>Первый месяц всего 99₽, затем 299₽/мес</p>
+                </div>
+                
+                <button class="btn btn-premium" style="padding: 15px 50px; font-size: 1.2rem;">
+                    <i class="fas fa-play"></i>
+                    Попробовать бесплатно
+                </button>
+            </div>
+        </section>
+        
+        <!-- Отзывы -->
+        <div class="section-header">
+            <h2 class="section-title">
+                <i class="fas fa-comments"></i>
+                Отзывы пользователей
+            </h2>
+        </div>
+        
+        <div class="testimonials">
+            <div class="testimonial">
+                <div class="testimonial-header">
+                    <div class="avatar">A</div>
+                    <div>
+                        <div class="testimonial-author">Александр Петров</div>
+                        <div class="testimonial-role">Подписчик 2 года</div>
+                    </div>
+                </div>
+                <div class="testimonial-text">
+                    "Лучшая платформа для просмотра фильмов! Качество видео на высоте, интерфейс удобный. Особенно радует отсутствие рекламы и возможность скачивания."
+                </div>
+                <div class="rating">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                </div>
+            </div>
+            
+            <div class="testimonial">
+                <div class="testimonial-header">
+                    <div class="avatar">М</div>
+                    <div>
+                        <div class="testimonial-author">Мария Иванова</div>
+                        <div class="testimonial-role">Киноман</div>
+                    </div>
+                </div>
+                <div class="testimonial-text">
+                    "Огромная коллекция фильмов, регулярные обновления. Подписка полностью оправдывает свою стоимость. Рекомендую всем ценителям качественного кино!"
+                </div>
+                <div class="rating">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star-half-alt"></i>
+                </div>
+            </div>
+            
+            <div class="testimonial">
+                <div class="testimonial-header">
+                    <div class="avatar">Д</div>
+                    <div>
+                        <div class="testimonial-author">Дмитрий Смирнов</div>
+                        <div class="testimonial-role">Критик</div>
+                    </div>
+                </div>
+                <div class="testimonial-text">
+                    "Порадовала подборка редких артхаусных фильмов, которые сложно найти на других платформах. Отличная работа команды по подбору контента."
+                </div>
+                <div class="rating">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Футер -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>О Filmore</h3>
+                    <p style="color: rgba(255,255,255,0.6); margin-bottom: 20px;">Лучшая платформа для просмотра фильмов и сериалов в высоком качестве без рекламы.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-telegram"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Навигация</h3>
+                    <ul class="footer-links">
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Главная</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Фильмы</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Сериалы</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Новинки</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Категории</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Помощь</h3>
+                    <ul class="footer-links">
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Вопросы и ответы</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Техническая поддержка</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Устройства</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Способы оплаты</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Отмена подписки</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Контакты</h3>
+                    <ul class="footer-links">
+                        <li><a href="#"><i class="fas fa-envelope"></i> support@filmore.tv</a></li>
+                        <li><a href="#"><i class="fas fa-phone"></i> +7 (800) 555-35-35</a></li>
+                        <li><a href="#"><i class="fas fa-map-marker-alt"></i> Москва, ул. Киношная, 24</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                <p>&copy; 2023 Filmore Video Platform. Все права защищены.</p>
+                <p style="margin-top: 10px; font-size: 0.9rem;">
+                    <a href="#" style="color: rgba(255,255,255,0.6); margin: 0 10px;">Политика конфиденциальности</a> | 
+                    <a href="#" style="color: rgba(255,255,255,0.6); margin: 0 10px;">Условия использования</a> | 
+                    <a href="#" style="color: rgba(255,255,255,0.6); margin: 0 10px;">Файлы cookie</a>
+                </p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Модальные окна -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Вход в аккаунт</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" class="form-control" id="loginEmail" placeholder="Ваш email">
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Пароль</label>
+                    <input type="password" class="form-control" id="loginPassword" placeholder="Ваш пароль">
+                </div>
+                <button class="btn btn-register btn-block">Войти</button>
+            </div>
+            <div class="modal-footer">
+                <p>Еще нет аккаунта? <a href="#" id="showRegister">Зарегистрироваться</a></p>
+                <p><a href="#">Забыли пароль?</a></p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="registerModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Создать аккаунт</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="registerName">Имя</label>
+                    <input type="text" class="form-control" id="registerName" placeholder="Ваше имя">
+                </div>
+                <div class="form-group">
+                    <label for="registerEmail">Email</label>
+                    <input type="email" class="form-control" id="registerEmail" placeholder="Ваш email">
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">Пароль</label>
+                    <input type="password" class="form-control" id="registerPassword" placeholder="Создайте пароль">
+                </div>
+                <div class="form-group">
+                    <label for="registerConfirm">Подтверждение пароля</label>
+                    <input type="password" class="form-control" id="registerConfirm" placeholder="Повторите пароль">
+                </div>
+                <button class="btn btn-register btn-block">Зарегистрироваться</button>
+            </div>
+            <div class="modal-footer">
+                <p>Уже есть аккаунт? <a href="#" id="showLogin">Войти</a></p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="premiumModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Премиум подписка</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="text-align: center; margin-bottom: 25px;">
+                    <div style="font-size: 3rem; color: var(--premium); margin-bottom: 15px;">
+                        <i class="fas fa-crown"></i>
+                    </div>
+                    <h3 style="color: white; margin-bottom: 10px;">Полный доступ ко всем возможностям</h3>
+                    <p style="color: rgba(255,255,255,0.7);">Попробуйте 30 дней бесплатно, затем 299₽/месяц</p>
+                </div>
+                
+                <ul style="list-style: none; margin-bottom: 30px;">
+                    <li style="padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                        <span>Эксклюзивный контент</span>
+                    </li>
+                    <li style="padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                        <span>Просмотр без рекламы</span>
+                    </li>
+                    <li style="padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                        <span>Скачивание для офлайн просмотра</span>
+                    </li>
+                    <li style="padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                        <span>Максимальное качество 4K HDR</span>
+                    </li>
+                    <li style="padding: 12px 0; display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                        <span>5 одновременных устройств</span>
+                    </li>
+                </ul>
+                
+                <button class="btn btn-premium btn-block" style="padding: 15px;">
+                    <i class="fas fa-play"></i>
+                    Начать бесплатный период
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Данные о фильмах
+        const movies = [
+            {
+                id: 1,
+                title: "Выбирай сам",
+                video: "https://cdn.filmore.tv/movies/action1/master.m3u8",
+                poster: "https://via.placeholder.com/800x450?text=Action+Movie",
+                category: "action",
+                description: "Захватывающий боевик о выборе и последствиях",
+                views: 12543,
+                duration: "1:58",
+                year: 2023,
+                premium: false
+            },
+            {
+                id: 2,
+                title: "Смех до упаду",
+                video: "https://cdn.filmore.tv/movies/comedy1/master.m3u8",
+                poster: "https://via.placeholder.com/800x450?text=Comedy+Movie",
+                category: "comedy",
+                description: "Комедийная история о нелепых ситуациях",
+                views: 8765,
+                duration: "1:45",
+                year: 2022,
+                premium: false
+            },
+            {
+                id: 3,
+                title: "Темные тайны",
+                video: "https://cdn.filmore.tv/movies/horror1/master.m3u8",
+                poster: "https://via.placeholder.com/800x450?text=Horror+Movie",
+                category: "horror",
+                description: "Ужасы, которые заставят вас бояться темноты",
+                views: 15678,
+                duration: "2:15",
+                year: 2023,
+                premium: true
+            },
+            {
+                id: 4,
+                title: "Сила мечты",
+                video: "https://cdn.filmore.tv/movies/drama1/master.m3u8",
+                poster: "https://via.placeholder.com/800x450?text=Drama+Movie",
+                category: "drama",
+                description: "Драматическая история о преодолении",
+                views: 9321,
+                duration: "2:05",
+                year: 2022,
+                premium: false
+            },
+            {
+                id: 5,
+                title: "Волшебный мир",
+                video: "https://cdn.filmore.tv/movies/fantasy1/master.m3u8",
+                poster: "https://via.placeholder.com/800x450?text=Fantasy+Movie",
+                category: "fantasy",
+                description: "Фэнтезийное приключение в магическом мире",
+                views: 21045,
+                duration: "2:22",
+                year: 2023,
+                premium: true
+            },
+            {
+                id: 6,
+                title: "Последний рубеж",
+                video: "https://cdn.filmore.tv/movies/action2/master.m3u8",
+                poster: "https://via.placeholder.com/800x450?text=Action+Movie+2",
+                category: "action",
+                description: "Экшен с крутыми трюками и перестрелками",
+                views: 18765,
+                duration: "2:10",
+                year: 2023,
+                premium: false
+            },
+            {
+                id: 7,
+                title: "Семейные узы",
+                video: "https://cdn.filmore.tv/movies/drama2/master.m3u8",
+                poster: "https://via.placeholder.com/800x450?text=Drama+Movie+2",
+                category: "drama",
+                description: "Трогательная драма о семейных ценностях",
+                views: 7654,
+                duration: "1:52",
+                year: 2022,
+                premium: false
+            },
+            {
+                id: 8,
+                title: "Комиксный герой",
+                video: "https://cdn.filmore.tv/movies/comedy2/master.m3u8",
+                poster: "https://via.placeholder.com/800x450?text=Comedy+Movie+2",
+                category: "comedy",
+                description: "Смешная пародия на супергероев",
+                views: 13456,
+                duration: "1:48",
+                year: 2023,
+                premium: true
+            }
+        ];
+
+        // Инициализация приложения
+        document.addEventListener('DOMContentLoaded', () => {
+            const videoPlayer = document.getElementById('mainVideo');
+            const statusText = document.getElementById('statusText');
+            const muteBtn = document.getElementById('muteBtn');
+            const fullscreenBtn = document.getElementById('fullscreenBtn');
+            const videoContainer = document.getElementById('videoContainer');
+            const loader = document.getElementById('loader');
+            const searchInput = document.getElementById('searchInput');
+            const categoryButtons = document.querySelectorAll('.category-btn');
+            const currentVideoTitle = document.getElementById('currentVideoTitle');
+            const viewCount = document.getElementById('viewCount');
+            const featuredVideos = document.getElementById('featuredVideos');
+            const newVideos = document.getElementById('newVideos');
+            const loginModal = document.getElementById('loginModal');
+            const registerModal = document.getElementById('registerModal');
+            const premiumModal = document.getElementById('premiumModal');
+            const closeButtons = document.querySelectorAll('.close-modal, .modal');
+            const showRegister = document.getElementById('showRegister');
+            const showLogin = document.getElementById('showLogin');
+            const loginBtn = document.getElementById('loginBtn');
+            const registerBtn = document.getElementById('registerBtn');
+            const premiumBtn = document.getElementById('premiumBtn');
+            const playPauseBtn = document.getElementById('playPauseBtn');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            let currentCategory = 'all';
+            let currentSearch = '';
+            let currentVideoIndex = 0;
+            let isPlaying = false;
+            
+            // Инициализация приложения
+            function initApp() {
+                renderMovies();
+                setupEventListeners();
+                loadFirstVideo();
+            }
+            
+            // Рендер списка фильмов
+            function renderMovies() {
+                featuredVideos.innerHTML = '';
+                newVideos.innerHTML = '';
+                
+                // Фильтрация видео
+                const filteredMovies = movies.filter(movie => {
+                    const matchesCategory = currentCategory === 'all' || movie.category === currentCategory;
+                    const matchesSearch = movie.title.toLowerCase().includes(currentSearch.toLowerCase()) || 
+                                         movie.description.toLowerCase().includes(currentSearch.toLowerCase());
+                    return matchesCategory && matchesSearch;
+                });
+                
+                // Рендер популярных видео
+                const popularMovies = [...filteredMovies]
+                    .sort((a, b) => b.views - a.views)
+                    .slice(0, 6);
+                
+                popularMovies.forEach(movie => {
+                    featuredVideos.appendChild(createVideoCard(movie));
+                });
+                
+                // Рендер новых видео
+                const newMovies = [...filteredMovies]
+                    .sort((a, b) => b.id - a.id)
+                    .slice(0, 6);
+                
+                newMovies.forEach(movie => {
+                    newVideos.appendChild(createVideoCard(movie));
+                });
+            }
+            
+            // Создание карточки видео
+            function createVideoCard(movie) {
+                const card = document.createElement('div');
+                card.className = 'video-card';
+                card.dataset.id = movie.id;
+                
+                card.innerHTML = `
+                    <img src="${movie.poster}" alt="${movie.title}">
+                    ${movie.premium ? `<div class="premium-badge"><i class="fas fa-crown"></i> PREMIUM</div>` : ''}
+                    <div class="video-category">${getCategoryName(movie.category)}</div>
+                    <div class="video-card-content">
+                        <div class="video-card-title">${movie.title}</div>
+                        <div class="video-card-meta">
+                            <span>${movie.year}</span>
+                            <span>${movie.duration}</span>
+                        </div>
+                    </div>
+                `;
+                
+                card.addEventListener('click', () => {
+                    currentVideoIndex = movies.findIndex(m => m.id === movie.id);
+                    loadVideo(movie);
+                });
+                
+                return card;
+            }
+            
+            // Получение названия категории
+            function getCategoryName(categoryId) {
+                const categories = {
+                    'action': 'Боевик',
+                    'comedy': 'Комедия',
+                    'drama': 'Драма',
+                    'fantasy': 'Фэнтези',
+                    'horror': 'Ужасы'
+                };
+                return categories[categoryId] || categoryId;
+            }
+            
+            // Настройка обработчиков событий
+            function setupEventListeners() {
+                // Поиск
+                searchInput.addEventListener('input', (e) => {
+                    currentSearch = e.target.value;
+                    renderMovies();
+                });
+                
+                // Категории
+                categoryButtons.forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        categoryButtons.forEach(b => b.classList.remove('active'));
+                        this.classList.add('active');
+                        currentCategory = this.dataset.category;
+                        renderMovies();
+                    });
+                });
+                
+                // Управление звуком
+                muteBtn.addEventListener('click', () => {
+                    videoPlayer.muted = !videoPlayer.muted;
+                    muteBtn.innerHTML = videoPlayer.muted ? 
+                        `<i class="fas fa-volume-mute"></i>` : 
+                        `<i class="fas fa-volume-up"></i>`;
+                });
+                
+                // Полноэкранный режим
+                fullscreenBtn.addEventListener('click', toggleFullscreen);
+                
+                // Модальные окна
+                loginBtn.addEventListener('click', () => showModal(loginModal));
+                registerBtn.addEventListener('click', () => showModal(registerModal));
+                premiumBtn.addEventListener('click', () => showModal(premiumModal));
+                
+                closeButtons.forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        if (e.target === btn || e.target.classList.contains('close-modal')) {
+                            hideAllModals();
+                        }
+                    });
+                });
+                
+                showRegister.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    hideAllModals();
+                    showModal(registerModal);
+                });
+                
+                showLogin.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    hideAllModals();
+                    showModal(loginModal);
+                });
+                
+                // Управление видео
+                playPauseBtn.addEventListener('click', togglePlayPause);
+                prevBtn.addEventListener('click', playPreviousVideo);
+                nextBtn.addEventListener('click', playNextVideo);
+                
+                videoPlayer.addEventListener('play', () => {
+                    isPlaying = true;
+                    playPauseBtn.innerHTML = `<i class="fas fa-pause"></i>`;
+                });
+                
+                videoPlayer.addEventListener('pause', () => {
+                    isPlaying = false;
+                    playPauseBtn.innerHTML = `<i class="fas fa-play"></i>`;
+                });
+                
+                videoPlayer.addEventListener('ended', playNextVideo);
+            }
+            
+            // Загрузка первого видео
+            function loadFirstVideo() {
+                if (movies.length > 0) {
+                    loadVideo(movies[0]);
+                }
+            }
+            
+            // Загрузка видео
+            function loadVideo(movie) {
+                loader.style.display = 'block';
+                currentVideoTitle.textContent = movie.title;
+                statusText.textContent = `Загрузка: ${movie.title}...`;
+                viewCount.textContent = movie.views;
+                
+                // Проверка поддержки HLS
+                if (Hls.isSupported() && movie.video.includes('.m3u8')) {
+                    const hls = new Hls();
+                    hls.loadSource(movie.video);
+                    hls.attachMedia(videoPlayer);
+                    hls.on(Hls.Events.MANIFEST_PARSED, () => {
+                        videoPlayer.play();
+                    });
+                } else if (videoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
+                    videoPlayer.src = movie.video;
+                    videoPlayer.addEventListener('loadedmetadata', () => {
+                        videoPlayer.play();
+                    });
+                } else {
+                    videoPlayer.innerHTML = 'Ваш браузер не поддерживает воспроизведение этого видео';
+                }
+                
+                videoPlayer.addEventListener('canplay', () => {
+                    loader.style.display = 'none';
+                    statusText.textContent = `Сейчас играет: ${movie.title}`;
+                });
+                
+                videoPlayer.addEventListener('error', () => {
+                    loader.style.display = 'none';
+                    statusText.textContent = `Ошибка загрузки видео: ${movie.title}`;
+                });
+                
+                // Обновление статистики просмотров
+                movie.views++;
+                viewCount.textContent = movie.views;
+            }
+            
+            // Переключение воспроизведения
+            function togglePlayPause() {
+                if (videoPlayer.paused) {
+                    videoPlayer.play();
+                } else {
+                    videoPlayer.pause();
+                }
+            }
+            
+            // Воспроизведение предыдущего видео
+            function playPreviousVideo() {
+                currentVideoIndex = (currentVideoIndex - 1 + movies.length) % movies.length;
+                loadVideo(movies[currentVideoIndex]);
+            }
+            
+            // Воспроизведение следующего видео
+            function playNextVideo() {
+                currentVideoIndex = (currentVideoIndex + 1) % movies.length;
+                loadVideo(movies[currentVideoIndex]);
+            }
+            
+            // Переключение полноэкранного режима
+            function toggleFullscreen() {
+                if (!document.fullscreenElement) {
+                    videoContainer.requestFullscreen().catch(err => {
+                        console.log(`Ошибка полноэкранного режима: ${err.message}`);
+                    });
+                } else {
+                    document.exitFullscreen();
+                }
+            }
+            
+            // Показать модальное окно
+            function showModal(modal) {
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
+            
+            // Скрыть все модальные окна
+            function hideAllModals() {
+                loginModal.style.display = 'none';
+                registerModal.style.display = 'none';
+                premiumModal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+            
+            // Запуск приложения
+            initApp();
+        });
+    </script>
+    
+    <!-- Код Telderi -->
+    <script>
+        // Здесь должен быть ваш код Telderi
+        // Пример кода (замените на реальный):
+        (function() {
+            var telderiScript = document.createElement('script');
+            telderiScript.type = 'text/javascript';
+            telderiScript.async = true;
+            telderiScript.src = 'https://analytics.telderi.ru/tracker.js';
+            
+            var firstScript = document.getElementsByTagName('script')[0];
+            firstScript.parentNode.insertBefore(telderiScript, firstScript);
+            
+            window.telderi = window.telderi || function() {
+                (telderi.q = telderi.q || []).push(arguments);
+            };
+            
+            telderi('init', {
+                projectId: 'YOUR_PROJECT_ID',
+                trackPageView: true,
+                trackClicks: true,
+                trackForms: true
+            });
+        })();
+    </script>
+</body>
+</html>

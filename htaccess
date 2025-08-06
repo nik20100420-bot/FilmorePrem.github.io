@@ -1,0 +1,7 @@
+# Разрешить доступ к странице аналитики только авторизованным пользователям
+<FilesMatch "^analytics\.html$">
+    AuthType Basic
+    AuthName "Restricted Area"
+    AuthUserFile /path/to/.htpasswd
+    Require valid-user
+</FilesMatch>

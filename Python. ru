@@ -1,0 +1,84 @@
+from flask import Flask, render_template, jsonify
+from datetime import datetime, timedelta
+import random
+
+app = Flask(__name__)
+
+# Моковые данные для демонстрации
+def generate_mock_analytics():
+    now = datetime.now()
+    
+    # Генерация данных за день (24 часа)
+    day_data = {
+        'visitors': [random.randint(100, 150) for _ in range(24)],
+        'registrations': [random.randint(5, 15) for _ in range(24)],
+        'labels': [f"{i}:00" for i in range(24)]
+    }
+    
+    # Генерация данных за неделю (7 дней)
+    week_data = {
+        'visitors': [random.randint(800, 1200) for _ in range(7)],
+        'registrations': [random.randint(40, 80) for _ in range(7)],
+        'labels': ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс']
+    }
+    
+    # Генерация данных за месяц (30 дней)
+    month_data = {
+        'visitors': [random.randint(300, 500) for _ in range(30)],
+        'registrations': [random.randint(15, 30) for _ in range(30)],
+        'labels': [str(i+1) for i in range(30)]
+    }
+    
+    # Генерация данных за полгода (6 месяцев)
+    half_year_data = {
+        'visitors': [random.randint(10000, 15000) for _ in range(6)],
+        'registrations': [random.randint(500, 1000) for _ in range(6)],
+        'labels': ['Янв-Июн', 'Фев-Июл', 'Мар-Авг', 'Апр-Сен', 'Май-Окт', 'Июн-Ноя']
+    }
+    
+    # Генерация данных за год (12 месяцев)
+    year_data = {
+        'visitors': [random.randint(20000, 30000) for _ in range(12)],
+        'registrations': [random.randint(1000, 2000) for _ in range(12)],
+        'labels': ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек']
+    }
+    
+    # Суммарные данные за все время
+    all_time_data = {
+        'visitors': [sum(year_data['visitors']) * 3],  # Примерно 3 года
+        'registrations': [sum(year_data['registrations']) * 3],
+        'labels': ['Все время']
+    }
+    
+    return {
+        'day': day_data,
+        'week': week_data,
+        'month': month_data,
+        'half-year': half_year_data,
+        'year': year_data,
+        'all': all_time_data
+    }
+
+@app.route('/analytics')
+def analytics():
+    return render_template('analytics.html')
+
+@app.route('/api/analytics/<period>')
+def analytics_data(period):
+    data = generate_mock_analytics()
+    return jsonify(data.get(period, {}))
+
+@app.route('/api/stats/<period>')
+def stats_data(period):
+    stats = {
+        'day': {'visitors': 12458, 'users': 1245, 'active': 3874},
+        'week': {'visitors': 8750, 'users': 875, 'active': 2712},
+        'month': {'visitors': 37500, 'users': 3750, 'active': 11625},
+        'half-year': {'visitors': 225000, 'users': 22500, 'active': 69750},
+        'year': {'visitors': 450000, 'users': 45000, 'active': 139500},
+        'all': {'visitors': 1500000, 'users': 150000, 'active': 465000}
+    }
+    return jsonify(stats.get(period, {}))
+
+if __name__ == '__main__':
+    app.run(debug=True)
